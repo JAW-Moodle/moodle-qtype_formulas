@@ -30,6 +30,9 @@
  * @license    https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_formulas_renderer extends qtype_with_combined_feedback_renderer {
+    // there currently is an error in Moodle in mod/quiz/attempt.php line 130 & 139 to call this twice
+    // so check this
+    static $headerjsadded = false;
 
     /**
      * Generate the display of the formulation part of the question. This is the
@@ -93,8 +96,12 @@ class qtype_formulas_renderer extends qtype_with_combined_feedback_renderer {
      * @return string HTML fragment
      */
     public function head_code(question_attempt $qa) {
-        $this->page->requires->js('/question/type/formulas/script/formatcheck.js');
-        return '';
+        // there currently is an error in Moodle in mod/quiz/attempt.php line 130 & 139 to call this twice
+        // so check this
+        if(!self::$headerjsadded) {
+            $this->page->requires->js_call_amd('qtype_formulas/formatcheck', 'init', [get_string('decsep', 'langconfig'), get_string('unit', 'qtype_formulas')]);
+            self::$headerjsadded = true;
+        }
     }
 
     /**
