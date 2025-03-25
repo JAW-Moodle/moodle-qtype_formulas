@@ -164,6 +164,12 @@ class token {
             }
             return $result;
         }
+        
+        // if its numeric replace decimal separator
+        $decsep = get_string('decsep', 'langconfig');
+        if($decsep != '.' && $this->type == self::NUMBER) {
+            return str_replace('.', $decsep, strval($this->value));
+        } 
 
         // For everything else, we use PHP's string conversion.
         return strval($this->value);

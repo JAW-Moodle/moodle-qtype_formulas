@@ -836,6 +836,9 @@ class qtype_formulas_question extends question_graded_automatically_with_countba
  */
 class qtype_formulas_part {
 
+    /** decimal separator */
+    private static $decsep = null;
+
     /** @var ?evaluator the part's evaluator class */
     public ?evaluator $evaluator = null;
 
@@ -1452,7 +1455,6 @@ class qtype_formulas_part {
      */
     public function grade(array $response, bool $finalsubmit = false): array {
         $isalgebraic = $this->answertype == qtype_formulas::ANSWER_TYPE_ALGEBRAIC;
-
         // Normalize the student's response for this part, removing answers from other parts.
         $response = $this->normalize_response($response);
 
@@ -1485,11 +1487,19 @@ class qtype_formulas_part {
             $conversionfactor = 1;
         }
 
+        // get decimal separator if not set
+        if(self::$decsep == null) {
+            self::$decsep = get_string('decsep', 'langconfig');
+        }
+        
         // Now we iterate over all student answers, feed them to the parser and evaluate them in order
         // to build an array containing the evaluated response.
         $evaluatedresponse = [];
         foreach ($response as $answer) {
             try {
+                if(self::$decsep != '.') {
+                    $answer = str_replace(self::$decsep, '.', $answer);
+                }
                 // Using the known variables upon initialisation allows the teacher to "block"
                 // certain built-in functions for the student by overwriting them, e. g. by
                 // defining "sin = 1" in the global variables.
